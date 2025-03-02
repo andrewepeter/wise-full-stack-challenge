@@ -1,8 +1,17 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
+        <div class="flex items-center justify-start gap-4">
+            <div x-data="{ darkMode: false }" 
+                x-init="darkMode = localStorage.getItem('darkMode') === 'true'; if (darkMode) document.documentElement.classList.add('dark')" 
+                @click="darkMode = !darkMode; document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', darkMode)">
+                
+                <button 
+                    class="p-2 bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 hover:ring-4 hover:ring-indigo-500
+    ">
+                    <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
+                </button>
+            </div>
+        </div>
     </x-slot>
 
     <<div x-data="{ jobList: $store.jobList }" x-init="jobList.fetchJobs()">
