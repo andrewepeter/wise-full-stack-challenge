@@ -1,4 +1,3 @@
-// Displays jobs on the dashboard
 import './bootstrap';
 import Alpine from 'alpinejs';
 
@@ -16,29 +15,36 @@ interface JobPosting {
 
 interface JobStore {
     jobs: JobPosting[];
-    jobCounts: Record<string, number>;
     isLoading: boolean;
     error: string | null;
+    filters: {
+        position_type: string[];
+        location: string[];
+        company: string[];
+    };
     fetchJobs: () => Promise<void>;
-    calculateJobCounts: () => void;
+    filteredJobs: () => JobPosting[];
+    uniqueLocations: () => string[];
+    uniqueCompanies: () => string[];
 }
 
 window.addEventListener('DOMContentLoaded', () => {
     Alpine.store('jobList', {
-        jobs: [] as JobPosting[],
-        jobCounts: {} as Record<string, number>,
-        isLoading: false,
-        error: null as string | null,
+        jobs: [],
+        isLoading: true,
+        error: null,
+        filters: {
+            position_type: [],
+            location: [],
+            company: [],
+        },
 
         async fetchJobs() {
             this.isLoading = true;
             this.error = null;
+
             try {
-                const response = await fetch('/jobs', {
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                });
+                const response = await fetch('/jobs');
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch jobs');
@@ -46,19 +52,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 const jobs: JobPosting[] = await response.json();
                 this.jobs = jobs;
-                this.calculateJobCounts(); // Calculate counts after fetching jobs
+                this.isLoading = false;
             } catch (err) {
-                this.error = (err instanceof Error) ? err.message : 'An unknown error occurred';
-            } finally {
+                this.error = 'Failed to load jobs';
                 this.isLoading = false;
             }
         },
 
-        calculateJobCounts() {
-            this.jobCounts = this.jobs.reduce((counts, job) => {
-                counts[job.company] = (counts[job.company] || 0) + 1;
-                return counts;
-            }, {} as Record<string, number>);
+        filteredJobs() {
+            return this.jobs.filter((job: JobPosting) =>
+                (this.filters.position_type.length === 0 || this.filters.position_type.includes(job.position_type)) &&
+                (this.filters.location.length === 0 || this.filters.location.includes(job.location)) &&
+                (this.filters.company.length === 0 || this.filters.company.includes(job.company))
+            );
+        },
+
+        uniqueLocations() {
+            return [...new Set(this.jobs.map((job: JobPosting) => job.location))];
+        },
+
+        uniqueCompanies() {
+            return [...new Set(this.jobs.map((job: JobPosting) => job.company))];
         },
     } as JobStore);
 
