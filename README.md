@@ -27,7 +27,7 @@ To get the project up and running locally, follow these steps:
       ```
 
 5. **Run the frontend server**:
-    - Open a second terminal in the `client` directory and run:
+    - Open a second terminal and run:
       ```bash
       npm run dev
       ```
