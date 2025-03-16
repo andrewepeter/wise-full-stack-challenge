@@ -17,6 +17,9 @@ interface JobStore {
     jobs: JobPosting[];
     isLoading: boolean;
     error: string | null;
+    selectedCompany: string | null,
+    selectedJob: JobPosting | null;
+
     filters: {
         position_type: string[];
         location: string[];
@@ -26,6 +29,12 @@ interface JobStore {
     filteredJobs: () => JobPosting[];
     uniqueLocations: () => string[];
     uniqueCompanies: () => string[];
+    loadedJobs: number;
+    loadMoreJobs: () => void;
+    isAdmin: boolean;
+    handleScroll: () => void;
+    selectJob: (job: JobPosting) => void;
+    notify: (message: string) => void;
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -33,11 +42,16 @@ window.addEventListener('DOMContentLoaded', () => {
         jobs: [],
         isLoading: true,
         error: null,
+        selectedCompany: null,
+        selectedJob: null,
         filters: {
             position_type: [],
             location: [],
             company: [],
         },
+        loadedJobs: 8,
+        isAdmin: false,
+
 
         async fetchJobs() {
             this.isLoading = true;
@@ -45,10 +59,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const response = await fetch('/jobs');
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch jobs');
-                }
+                if (!response.ok) throw new Error('Failed to fetch jobs');
 
                 const jobs: JobPosting[] = await response.json();
                 this.jobs = jobs;
@@ -60,11 +71,17 @@ window.addEventListener('DOMContentLoaded', () => {
         },
 
         filteredJobs() {
-            return this.jobs.filter((job: JobPosting) =>
-                (this.filters.position_type.length === 0 || this.filters.position_type.includes(job.position_type)) &&
-                (this.filters.location.length === 0 || this.filters.location.includes(job.location)) &&
-                (this.filters.company.length === 0 || this.filters.company.includes(job.company))
-            );
+            if (this.isAdmin) {
+                return this.jobs;
+            }
+            return this.jobs
+                .filter((job: JobPosting) =>
+                    (!this.selectedCompany || job.company?.toLowerCase() === this.selectedCompany?.toLowerCase()) &&
+                    (this.filters.position_type.length === 0 || this.filters.position_type.includes(job.position_type)) &&
+                    (this.filters.location.length === 0 || this.filters.location.includes(job.location)) &&
+                    (this.filters.company.length === 0 || this.filters.company.includes(job.company))
+                )
+                .slice(0, this.loadedJobs);
         },
 
         uniqueLocations() {
@@ -74,7 +91,34 @@ window.addEventListener('DOMContentLoaded', () => {
         uniqueCompanies() {
             return [...new Set(this.jobs.map((job: JobPosting) => job.company))];
         },
+
+        loadMoreJobs() {
+            this.loadedJobs += 8;
+        },
+
+        handleScroll() {
+            if (this.isAdmin || this.isLoading) return;
+
+            const scrollPosition = window.innerHeight + window.scrollY;
+            const documentHeight = document.documentElement.scrollHeight;
+
+            if (scrollPosition >= documentHeight - 100) {
+                this.loadMoreJobs();
+            }
+        },
+        selectJob(job) {
+            this.selectedJob = job;
+        },
+
+        notify(message) {
+            alert(message);
+        }
     } as JobStore);
+
+    // Attach the scroll event listener
+    window.addEventListener('scroll', () => {
+        (Alpine.store('jobList') as { handleScroll: () => void }).handleScroll();
+    });
 
     Alpine.start();
 });

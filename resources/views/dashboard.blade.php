@@ -5,9 +5,9 @@
             <div x-data="{ darkMode: false }"
                 x-init="darkMode = localStorage.getItem('darkMode') === 'true'; if (darkMode) document.documentElement.classList.add('dark')"
                 @click="darkMode = !darkMode; document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', darkMode)">
-                
-                <buttons
-                    class="p-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 hover:ring-4 hover:ring-indigo-500">
+
+                <button
+                    class="p-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 active:rotate-180 hover:ring-4 hover:ring-indigo-500">
                     <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
                 </button>
             </div>
@@ -24,7 +24,7 @@
                             showLocation: false,
                             showCompany: false,
                             jobList: $store.jobList
-                        }" 
+                        }"
                         class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
 
                         <!-- Horizontal Filter Bar -->
@@ -98,20 +98,21 @@
                             <template x-if="$store.jobList.error">
                                 <p class="text-red-500" x-text="$store.jobList.error"></p>
                             </template>
-                            <ul>
+                            <ul class="max-h-96 overflow-y-auto">
                                 <template x-for="job in $store.jobList.filteredJobs()" :key="job.id">
                                     <li class="py-2">
                                         <strong x-text="job.title"></strong>
                                         <span x-text="job.company"></span>
-                                        <span x-text="job.location"></span>
                                         <br>
-                                        <em x-text="job.salary"></em>
+                                        <span x-text="job.location"></span>
+                                        <em  x-text="`${job.salary}/yr,`"></em>
                                         <span x-text="job.position_type"></span>
                                         <p x-text="job.description"></p>
+                                        <p x-text="job.requirements"></p>
+                                        <p x-text="`Posted on ${job.date_posted}`"></p>
                                     </li>
                                 </template>
                             </ul>
-                        </div>
                     </div>
                 </div>
             </div>

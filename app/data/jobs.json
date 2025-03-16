@@ -54,5 +54,95 @@
         ],
         "position_type": "On-Site",
         "date_posted": "2021-01-14"
+    },
+    {
+        "id": 5,
+        "title": "Frontend Developer",
+        "company": "Meta",
+        "location": "Menlo Park, CA",
+        "salary": 120000,
+        "description": "Build and maintain features for the Facebook web platform.",
+        "requirements": [
+            "BS in Computer Science",
+            "3 years of experience",
+            "Proficiency in React and TypeScript"
+        ],
+        "position_type": "Hybrid",
+        "date_posted": "2021-01-20"
+    },
+    {
+        "id": 6,
+        "title": "Backend Engineer",
+        "company": "Amazon",
+        "location": "Seattle, WA",
+        "salary": 140000,
+        "description": "Develop scalable APIs for AWS services.",
+        "requirements": [
+            "BS in Computer Science",
+            "4 years of experience",
+            "Experience with Node.js and Python"
+        ],
+        "position_type": "Remote",
+        "date_posted": "2021-01-22"
+    },
+    {
+        "id": 7,
+        "title": "Data Scientist",
+        "company": "Netflix",
+        "location": "Los Gatos, CA",
+        "salary": 180000,
+        "description": "Analyze user data to optimize content recommendations.",
+        "requirements": [
+            "MS in Data Science or related field",
+            "3 years of experience",
+            "Proficiency in Python and SQL"
+        ],
+        "position_type": "On-Site",
+        "date_posted": "2021-01-25"
+    },
+    {
+        "id": 8,
+        "title": "DevOps Engineer",
+        "company": "Microsoft",
+        "location": "Redmond, WA",
+        "salary": 130000,
+        "description": "Maintain and optimize Azure cloud infrastructure.",
+        "requirements": [
+            "BS in Computer Science",
+            "5 years of experience",
+            "Experience with Docker and Kubernetes"
+        ],
+        "position_type": "Hybrid",
+        "date_posted": "2021-01-28"
+    },
+    {
+        "id": 9,
+        "title": "UI/UX Designer",
+        "company": "Spotify",
+        "location": "Stockholm, Sweden",
+        "salary": 110000,
+        "description": "Design intuitive interfaces for the Spotify app.",
+        "requirements": [
+            "BA in Design or related field",
+            "2 years of experience",
+            "Proficiency in Figma and Adobe XD"
+        ],
+        "position_type": "Remote",
+        "date_posted": "2021-02-01"
+    },
+    {
+        "id": 10,
+        "title": "Cybersecurity Analyst",
+        "company": "Cisco",
+        "location": "San Jose, CA",
+        "salary": 135000,
+        "description": "Monitor and protect network infrastructure from threats.",
+        "requirements": [
+            "BS in Information Security",
+            "3 years of experience",
+            "Experience with SIEM tools"
+        ],
+        "position_type": "On-Site",
+        "date_posted": "2021-02-05"
     }
 ]
