@@ -5,9 +5,7 @@
             <div x-data="{ darkMode: false }"
                 x-init="darkMode = localStorage.getItem('darkMode') === 'true'; if (darkMode) document.documentElement.classList.add('dark')"
                 @click="darkMode = !darkMode; document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', darkMode)">
-
-                <button
-                    class="p-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 active:rotate-180 hover:ring-4 hover:ring-indigo-500">
+                <button class="p-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 active:rotate-180 hover:ring-4 hover:ring-indigo-500">
                     <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
                 </button>
             </div>
@@ -16,20 +14,20 @@
 
     <!-- Job Listings with Filters -->
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg min-h-screen">
             <div class="p-6 text-gray-900 dark:text-gray-100">
                 <div x-init="$store.jobList.fetchJobs()">
                     <div x-data="{
+                            selectedJob: null,
                             showPosition: false,
                             showLocation: false,
                             showCompany: false,
                             jobList: $store.jobList
-                        }"
-                        class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
+                        }" class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
 
                         <!-- Horizontal Filter Bar -->
                         <h3 class="text-lg font-semibold mb-2">Filters</h3>
-                        <div class="flex space-x-4 mb-4 border-b pb-2">
+                        <div class="flex space-x-4 mb-6 border-b pb-2">
                             <button @click="showPosition = !showPosition" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                                 Position Type
                             </button>
@@ -42,7 +40,7 @@
                         </div>
 
                         <!-- Dropdown Panels for Filters -->
-                        <div class="mb-6">
+                        <div class="mb-8">
                             <!-- Position Type Dropdown -->
                             <template x-if="showPosition">
                                 <div class="mb-4 p-4 bg-white dark:bg-gray-800 rounded shadow">
@@ -51,8 +49,7 @@
                                         <label class="flex items-center space-x-2">
                                             <input type="checkbox" :value="type" x-model="jobList.filters.position_type">
                                             <span x-text="type"></span>
-                                            <span class="ml-auto text-sm text-gray-500"
-                                                x-text="jobList.jobs.filter(job => job.position_type === type).length + ' jobs'"></span>
+                                            <span class="ml-auto text-sm text-gray-500" x-text="jobList.jobs.filter(job => job.position_type === type).length + ' jobs'"></span>
                                         </label>
                                     </template>
                                 </div>
@@ -66,8 +63,7 @@
                                         <label class="flex items-center space-x-2">
                                             <input type="checkbox" :value="location" x-model="jobList.filters.location">
                                             <span x-text="location"></span>
-                                            <span class="ml-auto text-sm text-gray-500"
-                                                x-text="jobList.jobs.filter(job => job.location === location).length + ' jobs'"></span>
+                                            <span class="ml-auto text-sm text-gray-500" x-text="jobList.jobs.filter(job => job.location === location).length + ' jobs'"></span>
                                         </label>
                                     </template>
                                 </div>
@@ -81,8 +77,7 @@
                                         <label class="flex items-center space-x-2">
                                             <input type="checkbox" :value="company" x-model="jobList.filters.company">
                                             <span x-text="company"></span>
-                                            <span class="ml-auto text-sm text-gray-500"
-                                                x-text="jobList.jobs.filter(job => job.company === company).length + ' jobs'"></span>
+                                            <span class="ml-auto text-sm text-gray-500" x-text="jobList.jobs.filter(job => job.company === company).length + ' jobs'"></span>
                                         </label>
                                     </template>
                                 </div>
@@ -90,29 +85,39 @@
                         </div>
 
                         <!-- Job Listings -->
-                        <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-2">Job Postings</h3>
-                            <template x-if="$store.jobList.isLoading">
-                                <p>Loading jobs...</p>
-                            </template>
-                            <template x-if="$store.jobList.error">
-                                <p class="text-red-500" x-text="$store.jobList.error"></p>
-                            </template>
-                            <ul class="max-h-96 overflow-y-auto">
+                        <h3 class="text-lg font-semibold mb-4">Job Postings</h3>
+                        <template x-if="$store.jobList.filteredJobs().length">
+                            <ul class="max-h-[500px] overflow-y-auto space-y-4">
                                 <template x-for="job in $store.jobList.filteredJobs()" :key="job.id">
-                                    <li class="py-2">
-                                        <strong x-text="job.title"></strong>
-                                        <span x-text="job.company"></span>
-                                        <br>
-                                        <span x-text="job.location"></span>
-                                        <em  x-text="`${job.salary}/yr,`"></em>
-                                        <span x-text="job.position_type"></span>
-                                        <p x-text="job.description"></p>
-                                        <p x-text="job.requirements"></p>
-                                        <p x-text="`Posted on ${job.date_posted}`"></p>
+                                    <li class="py-2 opacity-0 transition-opacity duration-500" x-init="$el.classList.add('opacity-100')">
+                                        <div class="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800">
+                                            <h3 class="text-lg font-semibold" x-text="job.title"></h3>
+                                            <p class="text-gray-700 dark:text-gray-300">
+                                                <span x-text="job.company"></span> • <span x-text="job.location"></span>
+                                            </p>
+                                            <button @click="selectedJob = job"
+                                                class="mt-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+                                                View More Details
+                                            </button>
+                                        </div>
                                     </li>
                                 </template>
                             </ul>
+                        </template>
+
+                        <!-- Job Card -->
+                        <template x-if="selectedJob">
+                            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow mt-4">
+                                @include('components.job-details')
+
+                                <button
+                                    @click="$store.jobList.notify('You have successfully applied for the job!')"
+                                    class="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-grey-700 transition">
+                                    Apply
+                                </button>
+                            </div>
+                        </template>
+
                     </div>
                 </div>
             </div>
