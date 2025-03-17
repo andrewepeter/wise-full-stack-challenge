@@ -5,7 +5,8 @@
             <div x-data="{ darkMode: false }"
                 x-init="darkMode = localStorage.getItem('darkMode') === 'true'; if (darkMode) document.documentElement.classList.add('dark')"
                 @click="darkMode = !darkMode; document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', darkMode)">
-                <button class="p-2 bg-gray-300 dark:bg-gray-600 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 active:rotate-180 hover:ring-4 hover:ring-indigo-500">
+                <button class="p-2 bg-gray-300 dark:bg-gray-700 text-black dark:text-white rounded transform transition-transform duration-300 ease-in-out hover:scale-105 active:rotate-180 hover:ring-4 hover:ring-indigo-500"
+                    tabindex="0" x-on:keydown.enter="darkMode = !darkMode; document.documentElement.classList.toggle('dark'); localStorage.setItem('darkMode', darkMode)">
                     <span x-text="darkMode ? 'Light Mode' : 'Dark Mode'"></span>
                 </button>
             </div>
@@ -22,19 +23,32 @@
                             showPosition: false,
                             showLocation: false,
                             showCompany: false,
-                            jobList: $store.jobList
-                        }" class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8">
+                            jobList: $store.jobList,
+                            currentFocus: null
+                        }" class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-8" x-on:keydown.arrow-up="moveFocus('up')" x-on:keydown.arrow-down="moveFocus('down')" x-on:keydown.enter="selectFocused">
 
                         <!-- Horizontal Filter Bar -->
                         <h3 class="text-lg font-semibold mb-2">Filters</h3>
                         <div class="flex space-x-4 mb-6 border-b pb-2">
-                            <button @click="showPosition = !showPosition" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <button @click="showPosition = !showPosition"
+                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                    tabindex="0"
+                                    :class="{'bg-blue-200': currentFocus === 'position'}"
+                                    @keydown="currentFocus = 'position'">
                                 Position Type
                             </button>
-                            <button @click="showLocation = !showLocation" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <button @click="showLocation = !showLocation"
+                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                    tabindex="0"
+                                    :class="{'bg-blue-200': currentFocus === 'location'}"
+                                    @keydown="currentFocus = 'location'">
                                 Location
                             </button>
-                            <button @click="showCompany = !showCompany" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <button @click="showCompany = !showCompany"
+                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                                    tabindex="0"
+                                    :class="{'bg-blue-200': currentFocus === 'company'}"
+                                    @keydown="currentFocus = 'company'">
                                 Company
                             </button>
                         </div>
@@ -87,7 +101,7 @@
                         <!-- Job Listings -->
                         <h3 class="text-lg font-semibold mb-4">Job Postings</h3>
                         <template x-if="$store.jobList.filteredJobs().length">
-                            <ul class="max-h-[500px] overflow-y-auto space-y-4">
+                            <ul class="max-h-[800px] overflow-y-auto space-y-4">
                                 <template x-for="job in $store.jobList.filteredJobs()" :key="job.id">
                                     <li class="py-2 opacity-0 transition-opacity duration-500" x-init="$el.classList.add('opacity-100')">
                                         <div class="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-800">
@@ -95,29 +109,29 @@
                                             <p class="text-gray-700 dark:text-gray-300">
                                                 <span x-text="job.company"></span> • <span x-text="job.location"></span>
                                             </p>
-                                            <button @click="selectedJob = job"
+                                            <button @click="selectedJob = (selectedJob === job ? null : job)"
                                                 class="mt-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
                                                 View More Details
                                             </button>
                                         </div>
+
+                                        <!-- Job Card-->
+                                        <template x-if="selectedJob === job">
+                                            <div x-ref="jobDetails" class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow mt-4"
+                                                x-init="$refs.jobDetails.scrollIntoView({ behavior: 'smooth', block: 'start' })">
+                                                @include('components.job-details')
+
+                                                <button
+                                                    @click="$store.jobList.notify('You have successfully applied for the job!')"
+                                                    class="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-700 dark:bg-black dark:hover:bg-gray-600 transition-colors duration-300">
+                                                    Apply
+                                                </button>
+                                            </div>
+                                        </template>
                                     </li>
                                 </template>
                             </ul>
                         </template>
-
-                        <!-- Job Card -->
-                        <template x-if="selectedJob">
-                            <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow mt-4">
-                                @include('components.job-details')
-
-                                <button
-                                    @click="$store.jobList.notify('You have successfully applied for the job!')"
-                                    class="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-grey-700 transition">
-                                    Apply
-                                </button>
-                            </div>
-                        </template>
-
                     </div>
                 </div>
             </div>

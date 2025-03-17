@@ -93,6 +93,7 @@ window.addEventListener('DOMContentLoaded', () => {
         },
 
         loadMoreJobs() {
+            if (this.isLoading) return;
             this.loadedJobs += 8;
         },
 
